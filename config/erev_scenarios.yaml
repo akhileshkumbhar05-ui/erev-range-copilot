@@ -1,0 +1,33 @@
+# Scenario parameter definitions for the EREV model.
+# Replace these values with the calibrated numbers from the paper.
+
+scenarios:
+  Worst:
+    grid_co2_kg_per_kwh: 0.60
+    gas_co2_kg_per_litre: 2.31
+    ev_kwh_per_mile: 0.32
+    gas_litre_per_mile: 0.075
+    battery_kwh_per_mile_range: 0.35
+    battery_cost_usd_per_kwh: 150.0
+    electricity_price_usd_per_kwh: 0.20
+    gas_price_usd_per_litre: 1.20
+
+  Average:
+    grid_co2_kg_per_kwh: 0.40
+    gas_co2_kg_per_litre: 2.31
+    ev_kwh_per_mile: 0.30
+    gas_litre_per_mile: 0.070
+    battery_kwh_per_mile_range: 0.33
+    battery_cost_usd_per_kwh: 110.0
+    electricity_price_usd_per_kwh: 0.15
+    gas_price_usd_per_litre: 1.00
+
+  Best:
+    grid_co2_kg_per_kwh: 0.20
+    gas_co2_kg_per_litre: 2.31
+    ev_kwh_per_mile: 0.28
+    gas_litre_per_mile: 0.065
+    battery_kwh_per_mile_range: 0.32
+    battery_cost_usd_per_kwh: 80.0
+    electricity_price_usd_per_kwh: 0.10
+    gas_price_usd_per_litre: 0.80

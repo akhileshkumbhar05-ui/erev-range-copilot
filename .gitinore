@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.venv/
+env*/
+*.egg-info/
+
+# VS Code
+.vscode/
+
+# Data – do NOT commit data; everything can be regenerated
+data/raw/
+data/external/
+data/processed/
+
+# Streamlit cache
+.streamlit/
+
+# OS cruft
+.DS_Store
+Thumbs.db
