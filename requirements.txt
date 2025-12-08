@@ -1,6 +1,22 @@
+# Core scientific stack
 numpy
 pandas
+
+# Visualization / app
 matplotlib
+seaborn
 streamlit
-jupyterlab
+
+# Config / YAML
 pyyaml
+
+# HTTP + data loading
+requests
+openpyxl   # for reading FHWA Excel files
+
+# RAG / NLP stack (all open-source)
+sentence-transformers
+pypdf
+
+# Optional but useful for some analyses
+scikit-learn
