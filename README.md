@@ -161,10 +161,4 @@ project/
 
 ---
 
-## Acknowledgements
-- FHWA
-- Ollama
-- Llama 3.2
-- SentenceTransformers
-- EREV paper authors
 
