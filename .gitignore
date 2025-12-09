@@ -1,0 +1,29 @@
+# --- Python caches ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+ENV/
+.env
+.env.*
+
+# --- Editor / IDE ---
+.vscode/
+.idea/
+
+# --- OS junk ---
+.DS_Store
+Thumbs.db
+
+# --- RAG index artifacts (rebuild via build_knowledge_base.py) ---
+data/knowledge_base/embeddings.npy
+data/knowledge_base/chunks_meta.json
+
+# --- Local model binaries (if accidentally dropped here) ---
+*.gguf
+models/

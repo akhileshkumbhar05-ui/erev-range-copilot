@@ -17,6 +17,7 @@ openpyxl   # for reading FHWA Excel files
 # RAG / NLP stack (all open-source)
 sentence-transformers
 pypdf
+llama-cpp-python ; platform_system != "Windows"
 
 # Optional but useful for some analyses
 scikit-learn

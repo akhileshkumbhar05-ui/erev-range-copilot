@@ -10,6 +10,9 @@ import numpy as np
 import requests
 from sentence_transformers import SentenceTransformer
 
+# ---------------------------------------------------------------------------
+# Paths and config
+# ---------------------------------------------------------------------------
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 INDEX_DIR = PROJECT_ROOT / "data" / "knowledge_base"
@@ -18,9 +21,11 @@ CHUNKS_META_PATH = INDEX_DIR / "chunks_meta.json"
 
 EMBED_MODEL_NAME = "all-MiniLM-L6-v2"
 
-# Ollama config – can override with env vars if you want
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
+# Ollama config – defaults are for local development.
+# You can still override these with environment variables if needed.
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434")
+# IMPORTANT: keep this in sync with the model you actually pulled via `ollama pull`
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.2:1b")
 
 
 @dataclass
@@ -134,12 +139,23 @@ def _call_ollama_chat(prompt: str) -> str:
 
     try:
         resp = requests.post(url, json=payload, timeout=300)
-        resp.raise_for_status()
     except requests.RequestException as e:
+        # Network / connection-level problems
         raise RuntimeError(
-            f"Error calling Ollama at {url}. "
-            "Is `ollama serve` running and is the model pulled?"
+            f"Error calling Ollama at {url}: {e}. "
+            "Is Ollama installed and running locally?"
         ) from e
+
+    if resp.status_code != 200:
+        # Surface the Ollama error body to help debugging in Streamlit
+        try:
+            err_body = resp.text
+        except Exception:
+            err_body = "<unable to read response body>"
+        raise RuntimeError(
+            f"Ollama returned HTTP {resp.status_code} for {url}. "
+            f"Response body: {err_body}"
+        )
 
     data = resp.json()
     try:
