@@ -1,72 +1,53 @@
-# EREV Copilot – Analytics & RAG Q&A
+# EREV Copilot – Streamlit + Local RAG on CPU (AWS t3.large)
 
-EREV Copilot is an interactive analytics and question-answering dashboard for our
-Extended-Range Electric Vehicle (EREV) range and CO₂-savings study.
+EREV Copilot is a research-driven analytics and question-answering system focused on Extended-Range Electric Vehicles (EREVs) and national VMT electrification. The system combines interactive data visualizations with a Retrieval-Augmented Generation (RAG) copilot that answers questions using research PDFs and FHWA 2023 data, **without using paid APIs or GPUs**.
 
-The app combines:
-
-- **Range & VMT analytics dashboards** built in Streamlit.
-- A **local Retrieval-Augmented Generation (RAG)** pipeline that answers
-  questions using our paper, FHWA VMT tables, and supporting PDFs.
-- A **fully local LLM** served via [Ollama](https://ollama.com/) running on CPU
-  (no GPU instances used; final deployment is on an AWS `t3.large`).
-
-The goal is to let a reviewer explore EV range trade-offs and then ask natural
-language questions like:
-
-> “How much EV share does the paper show for a 50-mile range in the worst case?”
-
-and get answers grounded in the project documents.
+This entire pipeline is deployed on a low-cost **AWS t3.large** CPU instance and runs completely locally using **Ollama** + **Llama 3.2 (1B)** model.
 
 ---
 
-## 1. Features
+## What this project demonstrates
 
-- **EREV Range Explorer**
-  - Visualizes cost per mile, EV share, and range trade-offs.
+- EREV range vs. cost vs. CO₂ savings
+- Electric vehicle miles vs total VMT using U.S. FHWA 2023 data
+- A working local RAG system using open-source models
+- Fully CPU-only inference and deployment
+- End-to-end cloud deployment (AWS EC2)
 
-- **FHWA VMT – 2023 Summary**
-  - Shows 2023 U.S. VMT composition and shares used in the modeling.
-
-- **EREV Calculations Results**
-  - Summaries of carbon savings and cost metrics across ranges.
-
-- **RAG Q&A (Open-Source)**
-  - A chat-like view that:
-    - Retrieves the most relevant chunks from our knowledge base.
-    - Calls a local Ollama model (`llama3.2:1b` by default).
-    - Shows answers plus the context used.
+This shows that meaningful AI + transportation analytics can be deployed **without expensive GPU infrastructure**.
 
 ---
 
-## 2. Repo Structure (simplified)
+## Why it matters
 
-```text
-.
-├─ src/
-│  └─ evcopilot/
-│     ├─ __init__.py
-│     ├─ app/                # Streamlit pages / layout
-│     └─ rag/
-│        ├─ __init__.py
-│        ├─ indexer.py       # Builds embedding index from PDFs
-│        └─ qa.py            # RAG retrieval + Ollama client
-│
-├─ scripts/
-│  ├─ build_knowledge_base.py  # CLI wrapper around rag.indexer
-│  └─ run_dashboard.py         # Entry point for Streamlit app
-│
-├─ docs/
-│  └─ knowledge_base/        # Source PDFs for RAG
-│
-├─ data/
-│  └─ knowledge_base/
-│     ├─ embeddings.npy      # Dense vectors (created by pipeline)
-│     └─ chunks_meta.json    # Chunk text + metadata
-│
-├─ pipeline-outputs/
-│  ├─ screenshots/           # 4 screenshots of the deployed dashboard
-│  └─ erev_copilot_demo.mp4  # Short walkthrough recording
-│
-├─ requirements.txt
-└─ README.md
+Battery cost and EV range are the biggest barriers to rapid EV adoption. EREVs provide a practical transition path by enabling higher electric miles using smaller batteries. This platform helps:
+- Visualize EV electrification potential
+- Explore emissions reductions
+- Understand range trade-offs
+- Ask natural questions about the research
+
+---
+
+## Technology Stack
+
+- Streamlit
+- Ollama (local LLM)
+- Llama 3.2 1B
+- SentenceTransformers
+- Python
+- AWS EC2 (t3.large CPU)
+
+---
+
+## How to Run Locally (minimal steps)
+
+```bash
+git clone https://github.com/<yourusername>/<yourrepo>.git
+cd <yourrepo>
+python -m venv .venv
+.venv\Scripts\activate   # or source .venv/bin/activate
+pip install -r requirements.txt
+ollama pull llama3.2:1b
+export PYTHONPATH=$PWD/src
+python scripts/build_knowledge_base.py
+streamlit run scripts/run_dashboard.py --server.port 8501
