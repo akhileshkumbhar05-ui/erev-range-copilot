@@ -133,7 +133,6 @@ pipeline-outputs/
 Contains:
 - 4 screenshots of deployed copilot dashboard
 - A short video walkthrough demonstrating working Q&A
-- Proof of real EC2 CPU-only deployment
 
 ---
 
