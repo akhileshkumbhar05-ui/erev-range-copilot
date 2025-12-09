@@ -1,53 +1,170 @@
-# EREV Copilot – Streamlit + Local RAG on CPU (AWS t3.large)
+# EREV Copilot – Analytics & RAG Q&A
 
-EREV Copilot is a research-driven analytics and question-answering system focused on Extended-Range Electric Vehicles (EREVs) and national VMT electrification. The system combines interactive data visualizations with a Retrieval-Augmented Generation (RAG) copilot that answers questions using research PDFs and FHWA 2023 data, **without using paid APIs or GPUs**.
+This project extends the analysis from the Extended-Range Electric Vehicle (EREV) research paper and provides two main deliverables:
 
-This entire pipeline is deployed on a low-cost **AWS t3.large** CPU instance and runs completely locally using **Ollama** + **Llama 3.2 (1B)** model.
+1. Analytics Dashboard (Streamlit) – Visualizing EREV vs BEV trade-offs, CO2 savings, and 2023 VMT.
+2. RAG Copilot – Ask questions about the PDFs using a fully local LLM and embeddings (no OpenAI, no API keys).
 
----
-
-## What this project demonstrates
-
-- EREV range vs. cost vs. CO₂ savings
-- Electric vehicle miles vs total VMT using U.S. FHWA 2023 data
-- A working local RAG system using open-source models
-- Fully CPU-only inference and deployment
-- End-to-end cloud deployment (AWS EC2)
-
-This shows that meaningful AI + transportation analytics can be deployed **without expensive GPU infrastructure**.
+The system runs fully locally or on an AWS EC2 t3.large CPU-only instance using Ollama + Llama 3.2-1B.
 
 ---
 
-## Why it matters
-
-Battery cost and EV range are the biggest barriers to rapid EV adoption. EREVs provide a practical transition path by enabling higher electric miles using smaller batteries. This platform helps:
-- Visualize EV electrification potential
-- Explore emissions reductions
-- Understand range trade-offs
-- Ask natural questions about the research
-
----
-
-## Technology Stack
-
-- Streamlit
-- Ollama (local LLM)
-- Llama 3.2 1B
-- SentenceTransformers
-- Python
-- AWS EC2 (t3.large CPU)
+## Features
+- FHWA 2023 VMT integration
+- Cost-per-mile and CO2 savings metrics
+- Batteries vs electrified miles comparison
+- EREV vs BEV range trade-off visuals
+- Local retrieval augmented generation (RAG)
+- SentenceTransformers embeddings
+- Ollama local LLM backend (Llama 3.2-1B)
 
 ---
 
-## How to Run Locally (minimal steps)
+## Objective
+Identify the battery range that maximizes electrified vehicle miles per kWh while minimizing excessive battery size. The analysis suggests that smaller battery ranges (≈50–150 miles) achieve highly efficient electrification vs cost and CO2 impact.
 
-```bash
-git clone https://github.com/<yourusername>/<yourrepo>.git
-cd <yourrepo>
-python -m venv .venv
-.venv\Scripts\activate   # or source .venv/bin/activate
+---
+
+## Getting Started (Local)
+
+### Requirements
+- Python 3.10
+- pip
+- Ollama installed locally
+
+### Install dependences
+```
 pip install -r requirements.txt
+```
+
+### Pull the model
+```
 ollama pull llama3.2:1b
+```
+
+### Build embeddings index
+```
+python scripts/build_knowledge_base.py
+```
+
+### Launch dashboard
+```
+streamlit run scripts/run_dashboard.py
+```
+
+Open:
+```
+http://localhost:8501
+```
+
+---
+
+## Deployment (AWS t3.large)
+
+### Instance Settings
+- Ubuntu 24.04 LTS (x86_64)
+- Instance: t3.large (2 vCPU, 8 GB RAM)
+- Storage: 30GB
+- Open TCP 8501
+
+### Setup Commands (EC2)
+```bash
+sudo apt update
+sudo apt install -y git python3-venv python3-pip
+git clone <repo>
+cd <repo>
+
+python3 -m venv .venv
+source .venv/bin/activate
+
+pip install -r requirements.txt
+
+curl -fsSL https://ollama.com/install.sh | sh
+ollama pull llama3.2:1b
+
 export PYTHONPATH=$PWD/src
 python scripts/build_knowledge_base.py
-streamlit run scripts/run_dashboard.py --server.port 8501
+
+streamlit run scripts/run_dashboard.py --server.address 0.0.0.0 --server.port 8501
+```
+
+Open in your browser:
+```
+http://<EC2_PUBLIC_IP>:8501
+```
+
+---
+
+## Challenges We Faced
+
+### No GPU budget
+AWS prevented GPU instance launch due to quota. We redesigned everything around CPU-only deployment.
+
+### Large LLMs failed
+Bigger models crashed due to RAM. We switched to Llama 3.2-1B (the smallest and most efficient CPU model).
+
+### Slow inference
+CPU inference takes time. We reduced context chunks and accepted slower answers instead of paying for GPU.
+
+### Streamlit not reachable externally
+Required:
+```
+--server.address 0.0.0.0
+```
+plus security group inbound rule for 8501.
+
+---
+
+## How We Solved Them
+- Chose smallest LLM (Llama 3.2-1B)
+- Increased EBS (30GB)
+- Tuned prompt/contexts
+- CPU-only architecture
+- Fixed PYTHONPATH
+- Rebuilt RAG index on EC2 instead of copying
+
+---
+
+## Evidence of Deployment
+See:
+```
+pipeline-outputs/
+```
+Contains:
+- 4 screenshots of deployed copilot dashboard
+- A short video walkthrough demonstrating working Q&A
+- Proof of real EC2 CPU-only deployment
+
+---
+
+## What Could Be Added Next?
+- GPU version (g4, g5)
+- Larger LLM variants (pending quota)
+- Faster retrieval (FAISS/Chroma)
+- Additional policy PDFs
+- RAG quality evaluation metrics
+
+---
+
+## Repository Structure
+```
+project/
+├─ src/evcopilot/app/       # Streamlit UI
+├─ src/evcopilot/rag/       # RAG + Ollama logic
+├─ scripts/                 # Build / run scripts
+├─ docs/knowledge_base/     # Input PDFs
+├─ data/knowledge_base/     # Generated embeddings
+├─ pipeline-outputs/        # Screenshots + demo video
+├─ requirements.txt
+└─ README.md
+```
+
+---
+
+## Acknowledgements
+- FHWA
+- Ollama
+- Llama 3.2
+- SentenceTransformers
+- EREV paper authors
+
